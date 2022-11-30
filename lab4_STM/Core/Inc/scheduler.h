@@ -9,6 +9,7 @@
 #define INC_SCHEDULER_H_
 
 #include "main.h"
+#include "global.h"
 
 typedef struct{
 	// Pointer to the task (must be a ’void(void) ’function )

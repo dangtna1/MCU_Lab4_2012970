@@ -14,6 +14,9 @@ uint8_t SCH_Delete_Task(uint32_t taskID) {
 	SCH_tasks_G[taskID].Delay = 0;
 	SCH_tasks_G[taskID].Period =  0;
 	SCH_tasks_G[taskID].RunMe = 0;
+
+	numberOfCurrentTasks--;
+
 	return 1;
 }
 
@@ -27,7 +30,7 @@ void SCH_Init(void){
 
 uint32_t SCH_Add_Task( void (*pFunction)() , uint32_t DELAY, uint32_t PERIOD){
 	uint32_t index = 0;
-	while(SCH_tasks_G[index].pTask != 0x000 && index < SCH_MAX_TASKS){
+	while(SCH_tasks_G[index].pTask != 0x0000 && index < SCH_MAX_TASKS){
 		index++;
 	}
 	if(index == SCH_MAX_TASKS) return -1;

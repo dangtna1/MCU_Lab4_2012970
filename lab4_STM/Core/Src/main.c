@@ -28,6 +28,7 @@
 #include "taskFunctions.h"
 #include "stdio.h"
 #include <stdlib.h>
+#include "global.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -64,7 +65,6 @@ static void MX_USART1_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
 /* USER CODE END 0 */
 
 /**
@@ -74,7 +74,7 @@ static void MX_USART1_UART_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	uint8_t var[] = {"Hello World\r\n"};
+//	uint8_t var[] = {"Hello World\r\n"};
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -98,22 +98,28 @@ int main(void)
   MX_TIM2_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-  HAL_TIM_Base_Start_IT(&htim2) ;
+  HAL_TIM_Base_Start_IT(&htim2);
   /* USER CODE END 2 */
-//  HAL_UART_Transmit(&huart1, &var[0], 13, 100);
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-  int task1Index = SCH_Add_Task(task1, 50, 750);
-  int task2Index = SCH_Add_Task(task2, 150, 750);
-  int task3Index = SCH_Add_Task(task3, 300, 0); //one-shot task
-  int task4Index = SCH_Add_Task(task4, 500, 750);
-  int task5Index = SCH_Add_Task(task5, 750, 750);
+  int task1Index = SCH_Add_Task(task1, 100, 500);
+  int task2Index = SCH_Add_Task(task2, 200, 500);
+  int task3Index = SCH_Add_Task(task3, 300, 500);
+  int task4Index = SCH_Add_Task(task4, 400, 500);
+  int task5Index = SCH_Add_Task(task5, 500, 0); //one-shot task
+
+  setTimer1(1000);
   while (1)
   {
 	  SCH_Dispatch_Tasks();
-//	  HAL_UART_Transmit(&huart1, &var[0], 15, 100);
-//	  HAL_Delay(2000);
+	  if (timer1_flag == 1) {
+		  setTimer1(1000);
+		  time--;
+		  if (time == 0) {
+			  time = numberOfCurrentTasks + 1;
+		  }
+	  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -282,51 +288,21 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-//const int MAX_LED = 2;
-//int index_led = 0;
-//int led_buffer[2] = {1, 2};
-//void update7SEG(int index){
-//	switch (index_led){
-//		case 0:{
-//			HAL_GPIO_WritePin(GPIOA, EN1_Pin, GPIO_PIN_SET);
-//			HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, RESET);
-//			display7SEG_2(segmentNumber[led_buffer[0]]);
-//			index_led = 1;
-//			break;
-//		}
-//		case 1:{
-//			HAL_GPIO_WritePin(GPIOA, EN0_Pin, GPIO_PIN_SET);
-//			HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, RESET);
-//			display7SEG_2(segmentNumber[led_buffer[1]]);
-//			index_led = 0;
-//			break;
-//		}
-//	}
-//}
-//
-//void update_ledbuffer(void){
-//	uint32_t milis = HAL_GetTick();
-//	int tmp = (int)milis%1000;
-//	led_buffer[0] = tmp/10;
-//	led_buffer[1] = tmp%10;
-//}
 
-int time = 0;
-uint8_t timeStr[] = {"Hello\r\n"};
-int counter = 0;
+uint8_t buffer[19];
 
-//itoa(time, timeStr, 16);
-//sprintf(timeStr, "%d", time);
-
+int get_time() {
+	return time;
+}
+int timeStr = 0; //init
 void HAL_TIM_PeriodElapsedCallback ( TIM_HandleTypeDef * htim ){
+	timerRun();
+
 	SCH_Update();
-	HAL_UART_Transmit(&huart1, &timeStr[0], 6, 100);
-	if (counter == 100) {
-		counter = 0;
-		time++;
-	} else {
-		counter++;
-	}
+
+	timeStr = get_time();
+	sprintf((char*)buffer, "Time remaining = %d\r\n", timeStr);
+	HAL_UART_Transmit(&huart1, &buffer[0], 19, 1000);
 }
 /* USER CODE END 4 */
 

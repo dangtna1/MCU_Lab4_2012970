@@ -5,6 +5,7 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../Core/Src/global.c \
 ../Core/Src/led_control.c \
 ../Core/Src/main.c \
 ../Core/Src/scheduler.c \
@@ -17,6 +18,7 @@ C_SRCS += \
 ../Core/Src/taskFunctions.c 
 
 OBJS += \
+./Core/Src/global.o \
 ./Core/Src/led_control.o \
 ./Core/Src/main.o \
 ./Core/Src/scheduler.o \
@@ -29,6 +31,7 @@ OBJS += \
 ./Core/Src/taskFunctions.o 
 
 C_DEPS += \
+./Core/Src/global.d \
 ./Core/Src/led_control.d \
 ./Core/Src/main.d \
 ./Core/Src/scheduler.d \
